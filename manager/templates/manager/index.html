@@ -1,0 +1,85 @@
+{% extends "manager/base.html" %}
+{% block content %}
+<div class="heading"><a href="{% url 'manager:home' %}">{{ heading }}</a></div>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">
+                {{ message|safe }}
+                <a href="{% url 'manager:home' %}" class="close">X</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form class="search-form" >
+  <input type="text" placeholder="Поиск.." name="search_string">
+  <button type="submit"></button>
+</form>
+
+{% if profiles %}
+<table class="table">
+<thead>
+        <tr>
+           <th><a class="sorted-profiles" href="{% url 'manager:home' %}?sorted_by_field=name">Наименование</a></th>
+           <th><a class="sorted-profiles" href="{% url 'manager:home' %}?sorted_by_field=serial">ФН</a></th>
+           <th><a class="sorted-profiles" href="{% url 'manager:home' %}?sorted_by_field=enabled">Автостарт</a></th>
+           <th><a class="sorted-profiles" href="{% url 'manager:home' %}?sorted_by_field=shift">Смена</a></th>
+           <th><a class="sorted-profiles" href="{% url 'manager:home' %}?sorted_by_field=port">Порт</a></th>
+           <th>Примечание</th>
+           <th>PID</th>
+           <th>On/Off</th>
+        </tr>
+</thead>
+    <tbody>
+        {% for profile in profiles %}
+            <tr>
+                <td><a class="profile-name" href="{{ profile.get_absolute_url}}" >{{ profile.name }}</a></td>
+                <td>{{ profile.serial }}</td>
+
+                {% if profile.enabled %}
+                <td>да</td>
+                {% else %}
+                <td>нет</td>
+                {% endif %}
+
+                <td>{{ profile.shift }}</td>
+                <td>{{ profile.port }}</td>
+				
+				{% if profile.note %}
+					<td>{{ profile.note | truncatechars:20}}</td>
+					
+				{% else %}	
+					<td></td>
+					
+				{% endif %}
+				
+                <td>{% firstof profile.process.pid 'Отсутствует' %}</td>
+                <form action="{% url 'manager:change_process_state' profile.serial %}" method="post">
+                  {% csrf_token %}
+                    <input type="hidden" name="search_string" value="{{search_string}}">
+
+                    {% if profile.process.pid %}
+
+                    <input type="hidden" name="stop_process" value="OFF">
+                    <td><input type="submit" value="OFF"></td>
+
+                    {% else %}
+
+                    <input type="hidden" name="run_process" value="ON">
+                    <td><input type="submit" style="background-color: #259dd9;"  value="ON"></td>
+
+                    {% endif %}
+                </form>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+
+{% else %}
+    <div class="no-search-results">Совпадений не найдено</div>
+{% endif %}
+
+
+{% endblock %}

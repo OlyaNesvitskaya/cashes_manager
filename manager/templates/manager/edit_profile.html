@@ -1,0 +1,15 @@
+{% extends "manager/base.html" %}
+{% block content %}
+<div class="heading">{{ heading }}</div>
+<form method="post">
+    {% csrf_token %}
+    <table border="1" class="profile-change">
+    {{ form }}
+    </table>
+    <div class="profile-buttons">
+      <a href="{% url 'manager:home' %}" class="undo-action">Отмена</a>
+      <input type="submit" class="save-profile" value="Сохранить">
+    </div>
+</form>
+
+{% endblock %}

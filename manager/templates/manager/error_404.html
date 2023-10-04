@@ -1,0 +1,9 @@
+{% extends "manager/base.html" %}
+{% block content %}
+<div class="container">
+    <h1 style="color: red;">Ошибка 404</h1>
+    <p style="font-weight: bold;">Страница не найдена</p>
+    <p>Неправильно набран адрес или такой страницы на сайте больше не существует.</p>
+    <a class="btn btn-primary" href="{% url 'manager:home' %}">Перейти на главную страницу</a>
+</div>
+{% endblock %}
